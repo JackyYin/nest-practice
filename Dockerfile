@@ -7,6 +7,8 @@ COPY package.json ./
 
 RUN yarn global add \
     nodemon \
+    @nestjs/cli \
+    @nestjs/schematics \
     && yarn install \
     && yarn cache clean
 
