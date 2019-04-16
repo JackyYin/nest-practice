@@ -1,4 +1,5 @@
-export interface User {
-  id: number,
-  name: String
-};
+import { Document } from 'mongoose';
+
+export interface User extends Document {
+    readonly name: string;
+}
