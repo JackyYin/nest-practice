@@ -9,3 +9,12 @@ services:
       - '3000:3000'
     volumes:
       - ./:/usr/app/src
+
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - mongo:/data/db
+
+volumes:
+  mongo:
