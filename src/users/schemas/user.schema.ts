@@ -6,5 +6,11 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: true
+  },
+  google: String,
+  profile: {
+    name: String,
+    gender: String,
+    picture: String
   }
 });
