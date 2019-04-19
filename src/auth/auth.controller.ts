@@ -5,13 +5,23 @@ import * as passport from 'passport';
 export class AuthController {
     constructor() { }
 
+    @Get('google')
+    async googleSignIn() {
+
+    }
+
     @Get('google/callback')
     async googleCallback() {
 
     }
 
-    @Get('google')
-    async googleSignIn() {
+    @Get('facebook')
+    async facebookSignIn() {
+
+    }
+
+    @Get('facebook/callback')
+    async facebookCallback() {
 
     }
 

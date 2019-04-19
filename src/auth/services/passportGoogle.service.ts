@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { OAuth2Strategy } from 'passport-google-oauth';
 import * as passport from 'passport';
-import { ConfigService } from '../config/config.service';
+import { OAuth2Strategy } from 'passport-google-oauth';
+import { ConfigService } from '../../config/config.service';
 
 @Injectable()
 export class PassportGoogleService extends OAuth2Strategy {
@@ -12,7 +12,7 @@ export class PassportGoogleService extends OAuth2Strategy {
     super({
       clientID: config.get('GOOGLE_ID'),
       clientSecret: config.get('GOOGLE_SECRET'),
-      callbackURL: 'https://86c46ae0.ngrok.io/auth/google/callback',
+      callbackURL: `${config.get('CALLBACK_URL')}/auth/google/callback`,
       passReqToCallback: true
     }, (req, accessToken, refreshToken, profile, done) => {
       console.log(accessToken);

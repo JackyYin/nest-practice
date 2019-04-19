@@ -8,6 +8,7 @@ export const UserSchema = new mongoose.Schema({
     required: true
   },
   google: String,
+  facebook: String,
   profile: {
     name: String,
     gender: String,
