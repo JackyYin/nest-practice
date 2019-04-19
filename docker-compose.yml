@@ -22,5 +22,11 @@ services:
     ports:
       - '6379:6379'
 
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+
 volumes:
   mongo:

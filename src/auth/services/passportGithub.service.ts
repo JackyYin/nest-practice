@@ -1,24 +1,23 @@
 import { Injectable, Inject } from '@nestjs/common';
 import * as passport from 'passport';
-import { Strategy } from 'passport-facebook';
+import { Strategy } from 'passport-github';
 import { ConfigService } from '../../config/config.service';
 
 @Injectable()
-export class PassportFacebookService extends Strategy {
+export class PassportGithubService extends Strategy {
   constructor(
     @Inject('USER_MODEL') private readonly userModel,
     config: ConfigService
   ) {
     super({
-      clientID: config.get('FB_ID'),
-      clientSecret: config.get('FB_SECRET'),
-      callbackURL: `${config.get('CALLBACK_URL')}/auth/facebook/callback`,
+      clientID: config.get('GITHUB_ID'),
+      clientSecret: config.get('GITHUB_SECRET'),
+      callbackURL: `${config.get('CALLBACK_URL')}/auth/github/callback`,
       passReqToCallback: true,
-      profileFields: ['id', 'email', 'gender', 'link', 'name', 'photos', 'location'],
     }, (req, accessToken, tokenSecret, profile, done) => {
       console.log(accessToken);
       console.log(profile);
-      userModel.findOne({ facebook: profile.id }, (err, existingUser) => {
+      userModel.findOne({ github: profile.id }, (err, existingUser) => {
         if (err) { return done(err); }
         if (existingUser) {
           return done(null, existingUser);
@@ -30,11 +29,10 @@ export class PassportFacebookService extends Strategy {
           } else {
             const user = new userModel();
             user.email = profile.emails[0].value;
-            user.facebook = profile.id;
-            user.profile.name = `${profile.name.givenName} ${profile.name.familyName}`;
-            user.profile.gender = profile.gender;
-            user.profile.picture = profile.photos[0].value;
-            user.profile.location = profile._json.location.name;
+            user.github = profile.id;
+            user.profile.name = profile.displayName;
+            user.profile.picture = profile._json.avatar_url;
+            user.profile.location = profile._json.location;
             user.save((err) => {
               done(err, user);
             });

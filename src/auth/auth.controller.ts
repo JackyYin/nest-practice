@@ -25,6 +25,16 @@ export class AuthController {
 
     }
 
+    @Get('github')
+    async githubSignIn() {
+
+    }
+
+    @Get('github/callback')
+    async githubCallback() {
+
+    }
+
     @Get('user')
     async getUserView(@Req() req, @Response() res) {
       console.log(req.session.passport);

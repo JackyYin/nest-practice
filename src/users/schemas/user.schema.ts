@@ -9,9 +9,11 @@ export const UserSchema = new mongoose.Schema({
   },
   google: String,
   facebook: String,
+  github: String,
   profile: {
     name: String,
     gender: String,
-    picture: String
+    picture: String,
+    location: String,
   }
 });
