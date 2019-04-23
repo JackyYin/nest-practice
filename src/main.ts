@@ -1,12 +1,18 @@
 import * as session from 'express-session';
+import * as path from 'path';
 import * as redis from 'connect-redis';
 import * as passport from 'passport';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const RedisStore = redis(session);
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.setViewEngine('ejs');
+  app.setBaseViewsDir([path.join(__dirname, "views")]);
+  app.useStaticAssets(path.join(__dirname, '../public'));
 
   app.use(session({
     store: new RedisStore({
