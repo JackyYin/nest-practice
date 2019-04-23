@@ -45,5 +45,10 @@ export class AuthController {
     async getErrorView() {
 
     }
+
+    @Get('login')
+    async getLoginView(@Response() res) {
+      res.render('login.ejs');
+    }
 }
 
