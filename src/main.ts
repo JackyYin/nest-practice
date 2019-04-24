@@ -15,6 +15,8 @@ async function bootstrap() {
   app.useStaticAssets(path.join(__dirname, '../public'));
 
   app.use(session({
+    resave: false,
+    saveUninitialized: false,
     store: new RedisStore({
       host: 'redis',
       port: 6379
