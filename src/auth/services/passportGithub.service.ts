@@ -25,7 +25,7 @@ export class PassportGithubService extends Strategy {
         userModel.findOne({ email: profile.emails[0].value }, (err, existingEmailUser) => {
           if (err) { return done(err); }
           if (existingEmailUser) {
-            done(err);
+            done(null, existingEmailUser);
           } else {
             const user = new userModel();
             user.email = profile.emails[0].value;
