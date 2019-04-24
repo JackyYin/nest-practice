@@ -37,6 +37,9 @@ export class AuthController {
 
     @Get('user')
     async getUserView(@Req() req, @Response() res) {
+      if (!req.session.passport) {
+        res.redirect('/auth/login');
+      }
       console.log(req.session.passport);
       res.render('auth/profile.ejs', { 'user': req.session.passport.user });
     }
