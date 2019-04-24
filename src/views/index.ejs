@@ -1,10 +1,18 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= user.email %></title>
-  </head>
-  <body>
-    <h1><%= user.profile.name %> < <%= user.email %> > </h1>
-    <img src="<%= user.profile.picture %>" width="100px" height="100px" />
+
+<%- include('header'); %>
+
+  <body class="bg-dark">
+    <%- include('navbar'); %>
+    <div class="container mt-5">
+       <div class="card text-center border-dark bg-secondary text-white">
+          <div class="card-body">
+            <img class="rounded-circle" src="<%= user.profile.picture %>">
+            <p class="card-text"><%= user.profile.name %></p>
+            <p class="card-text"><%= user.email %></p>
+          </div>
+       </div>
+    </div>
   </body>
 </html>
