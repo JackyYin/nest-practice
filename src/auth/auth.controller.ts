@@ -40,8 +40,8 @@ export class AuthController {
       if (!req.session.passport) {
         res.redirect('/auth/login');
       }
-      console.log(req.session.passport);
-      res.render('auth/profile.ejs', { 'user': req.session.passport.user });
+      console.log(req.user);
+      res.render('auth/profile.ejs', { 'user': req.user });
     }
 
     @Get('error')
@@ -57,7 +57,7 @@ export class AuthController {
     @Get('logout')
     async logout(@Req() req, @Response() res) {
       req.session.destroy();
-
+      req.logout();
       res.redirect('/auth/login');
     }
 }
