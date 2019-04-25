@@ -53,5 +53,12 @@ export class AuthController {
     async getLoginView(@Response() res) {
       res.render('login.ejs');
     }
+
+    @Get('logout')
+    async logout(@Req() req, @Response() res) {
+      req.session.destroy();
+
+      res.redirect('/auth/login');
+    }
 }
 
