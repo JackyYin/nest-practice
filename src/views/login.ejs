@@ -3,16 +3,29 @@
 
 <%- include('header'); %>
 
-  <body class="bg-dark">
+  <body>
     <div class="container mt-5">
-      <div class="card text-center border-dark bg-secondary text-white">
-        <img src="https://media.giphy.com/media/5pN6XvznfC9UI/giphy.gif" class="card-img">
-        <div class="card-img-overlay">
-          <div class="card-header">Social Login</div>
-          <div class="card-body">
-            <h5 class="card-title">Social Login</h5>
-            <p class="card-text">login login login login login</p>
-            <div class="w-50 mx-auto">
+      <div class="card text-center border-dark">
+        <div class="card-body w-50 mx-auto">
+          <form>
+            <div class="form-group row">
+              <label for="email" class="col-form-label font-weight-bold">Email address</label>
+              <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+              <small id="emailHelp" class="form-text">We'll never share your email with anyone else.</small>
+            </div>
+            <div class="form-group row">
+              <label for="password" class="col-form-label font-weight-bold">Password</label>
+              <input type="password" class="form-control" id="password" placeholder="Password">
+            </div>
+            <div class="form-group row">
+              <button type="submit" class="btn btn-primary">
+                <span class="fas fa-unlock-alt"></span>
+                Login
+              </button>
+              <a class="btn btn-link" href="#">Forget your password?</a>
+            </div>
+            <hr>
+            <div class="form-group">
               <a class="btn btn-block btn-social btn-google" href="/auth/google">
                 <span class="fab fa-google fa-sm"></span> Sign in with Google
               </a>
@@ -23,10 +36,10 @@
                 <span class="fab fa-facebook"></span> Sign in with Facebook
               </a>
             </div>
-          </div>
-          <div class="card-footer">
-            <small>Login is good.</small>
-          </div>
+          </form>
+        </div>
+        <div class="card-footer">
+          <small>Login is good.</small>
         </div>
       </div>
     </div>
