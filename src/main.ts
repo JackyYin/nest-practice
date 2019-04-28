@@ -2,6 +2,7 @@ import * as session from 'express-session';
 import * as path from 'path';
 import * as redis from 'connect-redis';
 import * as passport from 'passport';
+import * as flash from 'connect-flash';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
@@ -23,6 +24,7 @@ async function bootstrap() {
     }),
     secret: 'blablabla'
   }));
+  app.use(flash());
   app.use(passport.initialize());
   app.use(passport.session());
   await app.listen(3000);

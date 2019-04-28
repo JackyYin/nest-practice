@@ -7,6 +7,7 @@ export const UserSchema = new mongoose.Schema({
     unique: true,
     required: true
   },
+  password: String,
   google: String,
   facebook: String,
   github: String,

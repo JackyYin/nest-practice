@@ -9,6 +9,7 @@ import { PassportGoogleService } from './services/passportGoogle.service';
 import { PassportFacebookService } from './services/passportFacebook.service';
 import { PassportGithubService } from './services/passportGithub.service';
 import { UsersModule } from '../users/users.module';
+import { flash } from '../common/middleware/flash.middleware';
 
 @Module({
 	imports: [UsersModule],
@@ -45,5 +46,7 @@ export class AuthModule implements NestModule {
         failureRedirect: '/auth/error'
       }))
       .forRoutes({ path: '/auth/github/callback', method: RequestMethod.GET })
+      .apply(flash)
+      .forRoutes('auth');
   }
 }

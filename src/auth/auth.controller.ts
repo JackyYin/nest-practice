@@ -1,5 +1,6 @@
-import { Controller, Get, Req, Response } from '@nestjs/common';
+import { Controller, Get, Post, Req, Response, Body, UsePipes, ValidationPipe } from '@nestjs/common';
 import * as passport from 'passport';
+import { SignupDto } from './dto/signup.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -51,7 +52,7 @@ export class AuthController {
 
     @Get('login')
     async getLoginView(@Response() res) {
-      res.render('login.ejs');
+      res.render('auth/login.ejs');
     }
 
     @Get('logout')
@@ -60,5 +61,18 @@ export class AuthController {
       req.logout();
       res.redirect('/auth/login');
     }
-}
 
+    @Get('signup')
+    async getSignupView(@Req() req, @Response() res) {
+      res.render('auth/signup.ejs');
+    }
+
+    @Post('signup')
+    @UsePipes(ValidationPipe)
+    async signup(@Req() req, @Response() res, @Body() signupDto: SignupDto) {
+      if (signupDto.password !== signupDto.password_confirmation) {
+        req.flash('error', 'Passwords do not match');
+        return res.redirect('/auth/signup');
+      }
+    }
+}

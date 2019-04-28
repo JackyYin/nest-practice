@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<%- include('../header'); %>
+
+  <body>
+    <div class="container mt-5">
+      <%- include('../flash'); %>
+      <div class="card text-center border-dark">
+        <div class="card-body w-50 mx-auto">
+          <form action="/auth/signup" method="post">
+            <div class="form-group row">
+              <label for="email" class="col-form-label font-weight-bold">Email address</label>
+              <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" name="email">
+            </div>
+            <div class="form-group row">
+              <label for="password" class="col-form-label font-weight-bold">Password</label>
+              <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+            </div>
+            <div class="form-group row">
+              <label for="password_confirmation" class="col-form-label font-weight-bold">Password Confirmation</label>
+              <input type="password_confirmation" class="form-control" id="password_confirmation" placeholder="Password Confirmation" name="password_confirmation">
+            </div>
+            <div class="form-group row">
+              <button type="submit" class="btn btn-primary">
+                <span class="fas fa-unlock-alt"></span>
+                Signup
+              </button>
+              <a class="btn btn-link" href="/auth/login">Already have an account ?</a>
+            </div>
+            <hr>
+          </form>
+        </div>
+        <div class="card-footer">
+          <small>Signup is good.</small>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
