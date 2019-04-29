@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Req, Response, Body, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Req, Response, Body, UsePipes, ValidationPipe, UseFilters } from '@nestjs/common';
 import * as passport from 'passport';
 import { SignupDto } from './dto/signup.dto';
+import { BadRequestExceptionFilter } from '../common/filter/bad-request-exception.filter';
 
 @Controller('auth')
 export class AuthController {
@@ -69,6 +70,7 @@ export class AuthController {
 
     @Post('signup')
     @UsePipes(ValidationPipe)
+    @UseFilters(new BadRequestExceptionFilter('/auth/signup'))
     async signup(@Req() req, @Response() res, @Body() signupDto: SignupDto) {
       if (signupDto.password !== signupDto.password_confirmation) {
         req.flash('error', 'Passwords do not match');
