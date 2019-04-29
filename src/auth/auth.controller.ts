@@ -5,76 +5,76 @@ import { BadRequestExceptionFilter } from '../common/filter/bad-request-exceptio
 
 @Controller('auth')
 export class AuthController {
-    constructor() { }
+  constructor() { }
 
-    @Get('google')
-    async googleSignIn() {
+  @Get('google')
+  async googleSignIn() {
 
-    }
+  }
 
-    @Get('google/callback')
-    async googleCallback() {
+  @Get('google/callback')
+  async googleCallback() {
 
-    }
+  }
 
-    @Get('facebook')
-    async facebookSignIn() {
+  @Get('facebook')
+  async facebookSignIn() {
 
-    }
+  }
 
-    @Get('facebook/callback')
-    async facebookCallback() {
+  @Get('facebook/callback')
+  async facebookCallback() {
 
-    }
+  }
 
-    @Get('github')
-    async githubSignIn() {
+  @Get('github')
+  async githubSignIn() {
 
-    }
+  }
 
-    @Get('github/callback')
-    async githubCallback() {
+  @Get('github/callback')
+  async githubCallback() {
 
-    }
+  }
 
-    @Get('user')
-    async getUserView(@Req() req, @Response() res) {
-      if (!req.session.passport) {
-        res.redirect('/auth/login');
-      }
-      console.log(req.user);
-      res.render('auth/profile.ejs', { 'user': req.user });
-    }
-
-    @Get('error')
-    async getErrorView() {
-
-    }
-
-    @Get('login')
-    async getLoginView(@Response() res) {
-      res.render('auth/login.ejs');
-    }
-
-    @Get('logout')
-    async logout(@Req() req, @Response() res) {
-      req.session.destroy();
-      req.logout();
+  @Get('user')
+  async getUserView(@Req() req, @Response() res) {
+    if (!req.session.passport) {
       res.redirect('/auth/login');
     }
+    console.log(req.user);
+    res.render('auth/profile.ejs', { 'user': req.user });
+  }
 
-    @Get('signup')
-    async getSignupView(@Req() req, @Response() res) {
-      res.render('auth/signup.ejs');
-    }
+  @Get('error')
+  async getErrorView() {
 
-    @Post('signup')
-    @UsePipes(ValidationPipe)
-    @UseFilters(new BadRequestExceptionFilter('/auth/signup'))
-    async signup(@Req() req, @Response() res, @Body() signupDto: SignupDto) {
-      if (signupDto.password !== signupDto.password_confirmation) {
-        req.flash('error', 'Passwords do not match');
-        return res.redirect('/auth/signup');
-      }
+  }
+
+  @Get('login')
+  async getLoginView(@Response() res) {
+    res.render('auth/login.ejs');
+  }
+
+  @Get('logout')
+  async logout(@Req() req, @Response() res) {
+    req.session.destroy();
+    req.logout();
+    res.redirect('/auth/login');
+  }
+
+  @Get('signup')
+  async getSignupView(@Req() req, @Response() res) {
+    res.render('auth/signup.ejs');
+  }
+
+  @Post('signup')
+  @UsePipes(ValidationPipe)
+  @UseFilters(new BadRequestExceptionFilter('/auth/signup'))
+  async signup(@Req() req, @Response() res, @Body() signupDto: SignupDto) {
+    if (signupDto.password !== signupDto.password_confirmation) {
+      req.flash('error', 'Passwords do not match');
+      return res.redirect('/auth/signup');
     }
+  }
 }
