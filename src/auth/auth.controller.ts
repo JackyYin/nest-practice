@@ -114,8 +114,10 @@ export class AuthController {
     const success = await createdUser.save();
 
     if (success) {
-      req.flash('success', '帳號註冊成功');
-      return res.redirect('/auth/signup');
+      req.session.passport = {
+        user: createdUser
+      };
+      return res.redirect('/auth/user');
     }
   }
 }
