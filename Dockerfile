@@ -3,6 +3,11 @@ EXPOSE 3000
 
 WORKDIR /usr/app/src
 
+RUN apk add \
+    g++ \
+    make \
+    python2
+
 COPY package.json ./
 
 RUN yarn global add \
