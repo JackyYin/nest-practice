@@ -9,8 +9,7 @@ export class BadRequestExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
 
-		console.log(exception.message);
-		exception.message.forEach((err) => {
+		exception.message.message.forEach((err) => {
 			Object.values(err.constraints).forEach((constraint) => {
 				request.flash('error', constraint);
 			});
