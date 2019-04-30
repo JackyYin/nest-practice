@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import * as bcrypt from 'bcrypt';
 
 export const UserSchema = new mongoose.Schema({
   name: String,
@@ -18,3 +19,9 @@ export const UserSchema = new mongoose.Schema({
     location: String,
   }
 });
+
+UserSchema.methods.comparePassword = function(candidatePassword) {
+  console.log(candidatePassword);
+  console.log(this.password);
+  return bcrypt.compareSync(candidatePassword, this.password);
+};

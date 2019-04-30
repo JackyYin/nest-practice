@@ -3,6 +3,7 @@ import * as passport from 'passport';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { SignupDto } from './dto/signup.dto';
+import { LoginDto } from './dto/login.dto';
 import { BadRequestExceptionFilter } from '../common/filter/bad-request-exception.filter';
 
 @Controller('auth')
@@ -56,6 +57,20 @@ export class AuthController {
   @Get('login')
   async getLoginView(@Response() res) {
     res.render('auth/login.ejs');
+  }
+
+  @Post('login')
+  @UsePipes(ValidationPipe)
+  @UseFilters(new BadRequestExceptionFilter('/auth/login'))
+  async login(@Req() req, @Response() res, @Body() loginDto: LoginDto) {
+    const targetUser = await this.userModel.findOne({ email: loginDto.email }).exec();
+
+    if (targetUser.comparePassword(loginDto.password)) {
+      req.session.passport = {
+        user: targetUser
+      };
+      return res.redirect('/auth/user');
+    }
   }
 
   @Get('logout')
