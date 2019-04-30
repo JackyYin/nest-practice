@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Req, Response, Body, UsePipes, ValidationPipe, UseFilters } from '@nestjs/common';
+import { Controller, Get, Post, Req, Response, Body, UsePipes, ValidationPipe, UseFilters, Inject } from '@nestjs/common';
 import * as passport from 'passport';
+import { Model } from 'mongoose';
 import { SignupDto } from './dto/signup.dto';
 import { BadRequestExceptionFilter } from '../common/filter/bad-request-exception.filter';
 
 @Controller('auth')
 export class AuthController {
-  constructor() { }
+  constructor(@Inject('USER_MODEL') private readonly userModel) {}
 
   @Get('google')
   async googleSignIn() {
@@ -74,6 +75,27 @@ export class AuthController {
   async signup(@Req() req, @Response() res, @Body() signupDto: SignupDto) {
     if (signupDto.password !== signupDto.password_confirmation) {
       req.flash('error', 'Passwords do not match');
+      return res.redirect('/auth/signup');
+    }
+
+    const dupUser = this.userModel.find({ email: signupDto.email }).exec();
+
+    if (dupUser) {
+      req.flash('error', '此email已有人使用');
+      return res.redirect('/auth/signup');
+    }
+
+    const createdUser = new this.userModel({
+      email:signupDto.email,
+      password: signupDto.password,
+      profile: {
+        name: signupDto.username
+      }
+    });
+    const success = await createdUser.save();
+
+    if (success) {
+      req.flash('success', '帳號註冊成功');
       return res.redirect('/auth/signup');
     }
   }
