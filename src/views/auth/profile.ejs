@@ -8,7 +8,11 @@
     <div class="container mt-5">
        <div class="card text-center border-dark text-white">
           <div class="card-body">
-            <img class="rounded-circle" src="<%= user.profile.picture %>" width="100px">
+            <% if (user.profile.picture) { %>
+              <img class="rounded-circle" src="<%= user.profile.picture %>" width="100px">
+            <% } else { %>
+              <img class="rounded-circle" src="http://chittagongit.com/images/default-user-icon/default-user-icon-8.jpg" width="100px">
+            <% } %>
             <p class="card-text"><%= user.profile.name %></p>
             <p class="card-text"><%= user.email %></p>
             <p class="card-text"><%= user.profile.gender %></p>
