@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Req, Response, Body, UsePipes, ValidationPipe, UseFilters, Inject } from '@nestjs/common';
 import * as passport from 'passport';
+import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { SignupDto } from './dto/signup.dto';
 import { BadRequestExceptionFilter } from '../common/filter/bad-request-exception.filter';
@@ -78,7 +79,7 @@ export class AuthController {
       return res.redirect('/auth/signup');
     }
 
-    const dupUser = this.userModel.find({ email: signupDto.email }).exec();
+    const dupUser = await this.userModel.findOne({ email: signupDto.email }).exec();
 
     if (dupUser) {
       req.flash('error', '此email已有人使用');
@@ -87,7 +88,7 @@ export class AuthController {
 
     const createdUser = new this.userModel({
       email:signupDto.email,
-      password: signupDto.password,
+      password: bcrypt.hashSync(signupDto.password, 10),
       profile: {
         name: signupDto.username
       }
