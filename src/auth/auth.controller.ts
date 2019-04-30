@@ -65,11 +65,14 @@ export class AuthController {
   async login(@Req() req, @Response() res, @Body() loginDto: LoginDto) {
     const targetUser = await this.userModel.findOne({ email: loginDto.email }).exec();
 
-    if (targetUser.comparePassword(loginDto.password)) {
+    if (await targetUser.comparePassword(loginDto.password)) {
       req.session.passport = {
         user: targetUser
       };
       return res.redirect('/auth/user');
+    } else {
+      req.flash('error', '帳號或密碼錯誤');
+      return res.redirect('/auth/login');
     }
   }
 
@@ -103,7 +106,7 @@ export class AuthController {
 
     const createdUser = new this.userModel({
       email:signupDto.email,
-      password: bcrypt.hashSync(signupDto.password, 10),
+      password: await bcrypt.hash(signupDto.password, 10),
       profile: {
         name: signupDto.username
       }

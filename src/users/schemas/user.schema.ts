@@ -20,8 +20,10 @@ export const UserSchema = new mongoose.Schema({
   }
 });
 
-UserSchema.methods.comparePassword = function(candidatePassword) {
-  console.log(candidatePassword);
+UserSchema.methods.comparePassword = async function(candidatePassword) {
   console.log(this.password);
-  return bcrypt.compareSync(candidatePassword, this.password);
+  if (!this.password) {
+    return false;
+  }
+  return await bcrypt.compare(candidatePassword, this.password);
 };
