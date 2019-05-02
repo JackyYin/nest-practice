@@ -8,7 +8,9 @@
       <%- include('../flash'); %>
       <div class="card text-center border-dark">
         <div class="card-body w-50 mx-auto">
-          <img src="https://camo.githubusercontent.com/0d358238ba8c67946e6555aad926b947e1a5048f/68747470733a2f2f6e6573746a732e636f6d2f696d672f6c6f676f5f746578742e737667" height="100px" href="#">
+          <div id="brand-animation">
+            <img id="brand" src="https://camo.githubusercontent.com/0d358238ba8c67946e6555aad926b947e1a5048f/68747470733a2f2f6e6573746a732e636f6d2f696d672f6c6f676f5f746578742e737667" height="100px" href="#" onclick="fire()">
+          </div>
           <form action="/auth/login" method="post">
             <div class="form-group row">
               <label for="email" class="col-form-label font-weight-bold">Email address</label>
@@ -48,3 +50,25 @@
     </div>
   </body>
 </html>
+<script>
+  function fire() {
+    let zone = document.getElementById('brand-animation');
+    let brand = document.getElementById('brand');
+    let fire = document.createElement('img');
+    fire.setAttribute('src', 'http://www.downloadclipart.net/medium/3292-fire-icon-clip-art.png');
+    fire.setAttribute('style', 'width:28px;')
+    zone.appendChild(fire);
+    anime({
+      targets: brand,
+      translateX: 250,
+      rotate: '1turn',
+      duration: 1000
+    });
+    anime({
+      targets: fire,
+      translateX: -400,
+      scale: 2,
+      duration: 2000
+    });
+  }
+</script>
