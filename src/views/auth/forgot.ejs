@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<%- include('header'); %>
+
+  <body>
+    <div class="container mt-5">
+      <%- include('../flash'); %>
+      <div class="card text-center border-dark">
+        <div class="card-body w-50 mx-auto">
+          <form action="/auth/forgot" method="post">
+            <div class="form-group row">
+              <label for="email" class="col-form-label font-weight-bold">Email address</label>
+              <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+              <small id="emailHelp" class="form-text">email...literally.</small>
+            </div>
+            <div class="form-group row">
+              <button type="submit" class="btn btn-primary">
+                <span class="fas fa-unlock-alt"></span>
+                Send me the fucking mail
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="card-footer">
+          <small>You are such a fool.</small>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

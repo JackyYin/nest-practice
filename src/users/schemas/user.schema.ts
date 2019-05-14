@@ -9,6 +9,8 @@ export const UserSchema = new mongoose.Schema({
     required: true
   },
   password: String,
+  passwordResetToken: String,
+  passwordResetExpires: Number,
   google: String,
   facebook: String,
   github: String,

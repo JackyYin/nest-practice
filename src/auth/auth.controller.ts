@@ -1,14 +1,20 @@
 import { Controller, Get, Post, Req, Response, Body, UsePipes, ValidationPipe, UseFilters, Inject } from '@nestjs/common';
 import * as passport from 'passport';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { Model } from 'mongoose';
+import { MailerService } from '../mailer/mailer.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgotDto } from './dto/forgot.dto';
 import { BadRequestExceptionFilter } from '../common/filter/bad-request-exception.filter';
 
 @Controller('auth')
 export class AuthController {
-  constructor(@Inject('USER_MODEL') private readonly userModel) {}
+  constructor(
+    @Inject('USER_MODEL') private readonly userModel,
+    private readonly mailerService: MailerService
+  ) {}
 
   @Get('google')
   async googleSignIn() {
@@ -119,5 +125,50 @@ export class AuthController {
       };
       return res.redirect('/auth/user');
     }
+  }
+
+  @Get('forgot')
+  async getForgotView(@Req() req, @Response() res) {
+    if (req.isAuthenticated()) {
+      return res.redirect('/auth/user');
+    }
+
+    res.render('auth/forgot.ejs');
+  }
+
+  @Post('forgot')
+  @UsePipes(ValidationPipe)
+  @UseFilters(new BadRequestExceptionFilter('/auth/forgot'))
+  async forgot(@Req() req, @Response() res, @Body() forgotDto: ForgotDto) {
+    let user = await this.userModel.findOne({ email: forgotDto.email }).exec();
+
+    if (!user) {
+      req.flash('error', '不存在的email');
+      return res.redirect('/auth/forgot');
+    }
+
+    if (user.facebook || user.github || user.google) {
+      req.flash('error', '社群帳號請使用社群登入');
+      return res.redirect('/auth/login');
+    }
+
+    const token = crypto.randomBytes(256).toString('hex');
+
+    user.passwordResetToken = await bcrypt.hash(token, 10);
+    user.passwordResetExpires = Date.now() + 3600000
+    user = await user.save();
+
+    this.mailerService.sendMail({
+      from: 'jackyyin@starlux-airlines.com',
+      to: user.email,
+      subject: 'Reset your password on Nestjs',
+      text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
+              Please click on the following link, or paste this into your browser to complete the process:\n\n
+              http://${req.headers.host}/auth/reset/${token}\n\n
+              If you did not request this, please ignore this email and your password will remain unchanged.\n`
+    });
+
+    req.flash('info', `An e-mail has been sent to ${user.email} with further instructions.`);
+    return res.redirect('/auth/forgot');
   }
 }
