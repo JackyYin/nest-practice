@@ -68,7 +68,7 @@ export class AuthController {
 
   @Post('login')
   @UsePipes(ValidationPipe)
-  @UseFilters(new BadRequestExceptionFilter('/auth/login'))
+  @UseFilters(new BadRequestExceptionFilter())
   async login(@Req() req, @Response() res, @Body() loginDto: LoginDto) {
     const targetUser = await this.userModel.findOne({ email: loginDto.email }).exec();
 
@@ -97,7 +97,7 @@ export class AuthController {
 
   @Post('signup')
   @UsePipes(ValidationPipe)
-  @UseFilters(new BadRequestExceptionFilter('/auth/signup'))
+  @UseFilters(new BadRequestExceptionFilter())
   async signup(@Req() req, @Response() res, @Body() signupDto: SignupDto) {
     if (signupDto.password !== signupDto.password_confirmation) {
       req.flash('error', 'Passwords do not match');
@@ -139,7 +139,7 @@ export class AuthController {
 
   @Post('forgot')
   @UsePipes(ValidationPipe)
-  @UseFilters(new BadRequestExceptionFilter('/auth/forgot'))
+  @UseFilters(new BadRequestExceptionFilter())
   async forgot(@Req() req, @Response() res, @Body() forgotDto: ForgotDto) {
     let user = await this.userModel.findOne({ email: forgotDto.email }).exec();
 
@@ -192,6 +192,8 @@ export class AuthController {
   }
 
   @Post('/reset/:token')
+  @UsePipes(ValidationPipe)
+  @UseFilters(new BadRequestExceptionFilter())
   async reset(@Req() req, @Response() res, @Body() resetDto: ResetDto) {
     if (resetDto.password !== resetDto.password_confirmation) {
       req.flash('error', 'Passwords do not match');
