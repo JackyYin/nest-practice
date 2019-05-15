@@ -7,6 +7,7 @@ import { MailerService } from '../mailer/mailer.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotDto } from './dto/forgot.dto';
+import { ResetDto } from './dto/reset.dto';
 import { BadRequestExceptionFilter } from '../common/filter/bad-request-exception.filter';
 
 @Controller('auth')
@@ -170,5 +171,56 @@ export class AuthController {
 
     req.flash('info', `An e-mail has been sent to ${user.email} with further instructions.`);
     return res.redirect('/auth/forgot');
+  }
+
+  @Get('/reset/:token')
+  async getRestView(@Req() req, @Response() res) {
+    if (req.isAuthenticated()) {
+      return res.redirect('/auth/user');
+    }
+
+    let users = await this.userModel.find({ passwordResetExpires: { $gt: Date.now() }}).exec();
+
+    let user = users.find((user) => bcrypt.compareSync(req.params.token, user.passwordResetToken));
+
+    if (!user) {
+      req.flash('error', 'Password reset token is invalid or has expired.');
+      return res.redirect('/auth/forgot');
+    }
+
+    res.render('auth/reset.ejs', { 'user': user});
+  }
+
+  @Post('/reset/:token')
+  async reset(@Req() req, @Response() res, @Body() resetDto: ResetDto) {
+    if (resetDto.password !== resetDto.password_confirmation) {
+      req.flash('error', 'Passwords do not match');
+      return res.redirect('back');
+    }
+
+    let users = await this.userModel.find({ passwordResetExpires: { $gt: Date.now() }}).exec();
+
+    let user = users.find((user) => bcrypt.compareSync(req.params.token, user.passwordResetToken));
+
+    if (!user) {
+      req.flash('error', 'Password reset token is invalid or has expired.');
+      return res.redirect('/auth/forgot');
+    }
+
+    user.password = await bcrypt.hash(resetDto.password, 10);
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    await user.save();
+
+    this.mailerService.sendMail({
+      from: 'jackyyin@starlux-airlines.com',
+      to: user.email,
+      subject: 'Your Nestjs password has been changed',
+      text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n`
+    });
+
+    req.flash('success', 'Success! Your password has been changed.');
+    res.redirect('/auth/login');
   }
 }
