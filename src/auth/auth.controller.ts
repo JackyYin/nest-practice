@@ -98,8 +98,9 @@ export class AuthController {
 
   @Post('signup')
   @UsePipes(ValidationPipe)
+  @UsePipes(PasswordCompareValidationPipe)
   @UseFilters(new BadRequestExceptionFilter())
-  async signup(@Req() req, @Response() res, @Body(new PasswordCompareValidationPipe()) signupDto: SignupDto) {
+  async signup(@Req() req, @Response() res, @Body() signupDto: SignupDto) {
     const dupUser = await this.userModel.findOne({ email: signupDto.email }).exec();
 
     if (dupUser) {
@@ -189,8 +190,9 @@ export class AuthController {
 
   @Post('/reset/:token')
   @UsePipes(ValidationPipe)
+  @UsePipes(PasswordCompareValidationPipe)
   @UseFilters(new BadRequestExceptionFilter())
-  async reset(@Req() req, @Response() res, @Body(new PasswordCompareValidationPipe()) resetDto: ResetDto) {
+  async reset(@Req() req, @Response() res, @Body() resetDto: ResetDto) {
     let users = await this.userModel.find({ passwordResetExpires: { $gt: Date.now() }}).exec();
 
     let user = users.find((user) => bcrypt.compareSync(req.params.token, user.passwordResetToken));
