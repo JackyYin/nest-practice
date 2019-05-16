@@ -8,12 +8,13 @@ import { AuthController } from './auth.controller';
 import { PassportGoogleService } from './services/passportGoogle.service';
 import { PassportFacebookService } from './services/passportFacebook.service';
 import { PassportGithubService } from './services/passportGithub.service';
+import { AuthService } from './services/auth.service';
 import { UsersModule } from '../users/users.module';
 import { flash } from '../common/middleware/flash.middleware';
 
 @Module({
 	imports: [UsersModule],
-	providers: [PassportGoogleService, PassportFacebookService, PassportGithubService],
+	providers: [PassportGoogleService, PassportFacebookService, PassportGithubService, AuthService],
   controllers: [AuthController],
 })
 export class AuthModule implements NestModule {

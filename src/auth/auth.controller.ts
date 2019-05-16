@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { Model } from 'mongoose';
 import { MailerService } from '../mailer/mailer.service';
+import { AuthService } from './services/auth.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotDto } from './dto/forgot.dto';
@@ -15,7 +16,8 @@ import { PasswordCompareValidationPipe } from './password-compare-validation.pip
 export class AuthController {
   constructor(
     @Inject('USER_MODEL') private readonly userModel,
-    private readonly mailerService: MailerService
+    private readonly mailerService: MailerService,
+    private readonly authService: AuthService
   ) {}
 
   @Get('google')
@@ -176,9 +178,7 @@ export class AuthController {
       return res.redirect('/auth/user');
     }
 
-    let users = await this.userModel.find({ passwordResetExpires: { $gt: Date.now() }}).exec();
-
-    let user = users.find((user) => bcrypt.compareSync(req.params.token, user.passwordResetToken));
+    const user = await this.authService.getVerifiedUserByPRT(req.params.token);
 
     if (!user) {
       req.flash('error', 'Password reset token is invalid or has expired.');
@@ -193,9 +193,7 @@ export class AuthController {
   @UsePipes(PasswordCompareValidationPipe)
   @UseFilters(new BadRequestExceptionFilter())
   async reset(@Req() req, @Response() res, @Body() resetDto: ResetDto) {
-    let users = await this.userModel.find({ passwordResetExpires: { $gt: Date.now() }}).exec();
-
-    let user = users.find((user) => bcrypt.compareSync(req.params.token, user.passwordResetToken));
+    let user = await this.authService.getVerifiedUserByPRT(req.params.token);
 
     if (!user) {
       req.flash('error', 'Password reset token is invalid or has expired.');
