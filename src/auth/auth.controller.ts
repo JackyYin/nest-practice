@@ -9,6 +9,7 @@ import { LoginDto } from './dto/login.dto';
 import { ForgotDto } from './dto/forgot.dto';
 import { ResetDto } from './dto/reset.dto';
 import { BadRequestExceptionFilter } from '../common/filter/bad-request-exception.filter';
+import { PasswordCompareValidationPipe } from './password-compare-validation.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -98,12 +99,7 @@ export class AuthController {
   @Post('signup')
   @UsePipes(ValidationPipe)
   @UseFilters(new BadRequestExceptionFilter())
-  async signup(@Req() req, @Response() res, @Body() signupDto: SignupDto) {
-    if (signupDto.password !== signupDto.password_confirmation) {
-      req.flash('error', 'Passwords do not match');
-      return res.redirect('/auth/signup');
-    }
-
+  async signup(@Req() req, @Response() res, @Body(new PasswordCompareValidationPipe()) signupDto: SignupDto) {
     const dupUser = await this.userModel.findOne({ email: signupDto.email }).exec();
 
     if (dupUser) {
@@ -194,12 +190,7 @@ export class AuthController {
   @Post('/reset/:token')
   @UsePipes(ValidationPipe)
   @UseFilters(new BadRequestExceptionFilter())
-  async reset(@Req() req, @Response() res, @Body() resetDto: ResetDto) {
-    if (resetDto.password !== resetDto.password_confirmation) {
-      req.flash('error', 'Passwords do not match');
-      return res.redirect('back');
-    }
-
+  async reset(@Req() req, @Response() res, @Body(new PasswordCompareValidationPipe()) resetDto: ResetDto) {
     let users = await this.userModel.find({ passwordResetExpires: { $gt: Date.now() }}).exec();
 
     let user = users.find((user) => bcrypt.compareSync(req.params.token, user.passwordResetToken));
