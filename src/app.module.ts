@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { MailerModule } from './mailer/mailer.module';
+import { LdapModule } from './ldap/ldap.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { MailerModule } from './mailer/mailer.module';
     DatabaseModule,
     AuthModule,
     ConfigModule,
-    MailerModule
+    MailerModule,
+    LdapModule
   ],
   controllers: [AppController],
   providers: [AppService],
