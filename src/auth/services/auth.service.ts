@@ -1,11 +1,13 @@
 import { Injectable, Inject } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '../../mailer/mailer.service';
+import { LdapLoginDto } from '../dto/ldap-login.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject('USER_MODEL') private readonly userModel,
+    @Inject('LDAP_CLIENT') private readonly ldapClient,
     private readonly mailerService: MailerService
   ) {}
 
@@ -36,5 +38,30 @@ export class AuthService {
       text: `Hello,\n\nThis is a confirmation that the password for your account ${email} has just been changed.\n`
     });
     return;
+  }
+
+  getLdapUser(ldapLoginDto : LdapLoginDto) : Promise<any> {
+    const opts = {
+      filter: `(&(objectCategory=user)(objectClass=user)(sAMAccountName=${ldapLoginDto.username}))`,
+      scope: 'sub'
+    }
+
+    return new Promise((resolve, reject) => {
+      this.ldapClient.bind(`${ldapLoginDto.username}@starlux-airlines.com`, ldapLoginDto.password, (err) => {
+        this.ldapClient.search('OU=starlux-airlines,DC=starlux-airlines,DC=com', opts, (err, result) => {
+          result.on('searchEntry', (entry) => {
+            resolve(entry.object);
+          });
+
+          result.on('error', error => {
+            reject(error.message);
+          })
+
+          result.on('end', result => {
+            console.log('If not found', result);
+          })
+        })
+      })
+    });
   }
 }

@@ -16,7 +16,6 @@ import { PasswordCompareValidationPipe } from './password-compare-validation.pip
 export class AuthController {
   constructor(
     @Inject('USER_MODEL') private readonly userModel,
-    @Inject('LDAP_CLIENT') private readonly ldap,
     private readonly authService: AuthService
   ) {}
 
@@ -96,44 +95,32 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   @UseFilters(new BadRequestExceptionFilter())
   async ldapLogin(@Req() req, @Response() res, @Body() ldapLoginDto: LdapLoginDto, @Session() session) {
-    const opts = {
-      filter: `(&(objectCategory=user)(objectClass=user)(sAMAccountName=${ldapLoginDto.username}))`,
-      scope: 'sub'
+    let ldapUser;
+
+    try {
+      ldapUser = await this.authService.getLdapUser(ldapLoginDto);
+      console.log('ldapUser: ', ldapUser);
+    } catch (e) {
+      console.error(e);
+      req.flash('error', 'Ldap Authentication Failed!');
+      return res.redirect('back');
     }
 
-    this.ldap.bind(`${ldapLoginDto.username}@starlux-airlines.com`, ldapLoginDto.password, (err) => {
-      this.ldap.search('OU=starlux-airlines,DC=starlux-airlines,DC=com', opts, (err, result) => {
-        result.on('searchEntry', async (entry) => {
-          console.log(entry.object);
+    let user = await this.userModel.findOne({email: ldapUser.mail }).exec();
 
-          let user = await this.userModel.findOne({email: entry.object.mail }).exec();
+    if (!user) {
+      user = await this.userModel.create({
+        email: ldapUser.mail,
+        profile: {
+          name: ldapUser.name
+        }
+      });
+    }
 
-          if (!user) {
-            user = await this.userModel.create({
-              email: entry.object.mail,
-              profile: {
-                name: entry.object.name
-              }
-            });
-          }
+    req.logout();
+    session.passport = { user: user };
 
-          req.logout();
-          session.passport = { user: user };
-
-          return res.redirect('/auth/user');
-        });
-
-        result.on('error', error => {
-          console.error('error: ', error.message);
-          req.flash('error', 'Ldap Authentication Failed!');
-          res.redirect('back');
-        })
-
-        result.on('end', result => {
-          console.log('If not found', result);
-        })
-      })
-    })
+    return res.redirect('/auth/user');
   }
 
   @Get('logout')
