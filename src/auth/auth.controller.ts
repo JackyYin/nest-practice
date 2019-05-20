@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, Response, Body, UsePipes, ValidationPipe, UseFilters, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Req, Response, Body, UsePipes, ValidationPipe, UseFilters, Inject, Session } from '@nestjs/common';
 import * as passport from 'passport';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -8,6 +8,7 @@ import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotDto } from './dto/forgot.dto';
 import { ResetDto } from './dto/reset.dto';
+import { LdapLoginDto } from './dto/ldap-login.dto';
 import { BadRequestExceptionFilter } from '../common/filter/bad-request-exception.filter';
 import { PasswordCompareValidationPipe } from './password-compare-validation.pipe';
 
@@ -15,6 +16,7 @@ import { PasswordCompareValidationPipe } from './password-compare-validation.pip
 export class AuthController {
   constructor(
     @Inject('USER_MODEL') private readonly userModel,
+    @Inject('LDAP_CLIENT') private readonly ldap,
     private readonly authService: AuthService
   ) {}
 
@@ -82,6 +84,56 @@ export class AuthController {
       req.flash('error', '帳號或密碼錯誤');
       return res.redirect('/auth/login');
     }
+  }
+
+  @Get('ldap/login')
+  async getLdapLoginView(@Response() res, @Session() session) {
+    console.log(session);
+    res.render('auth/ldap-login.ejs');
+  }
+
+  @Post('ldap/login')
+  @UsePipes(ValidationPipe)
+  @UseFilters(new BadRequestExceptionFilter())
+  async ldapLogin(@Req() req, @Response() res, @Body() ldapLoginDto: LdapLoginDto, @Session() session) {
+    const opts = {
+      filter: `(&(objectCategory=user)(objectClass=user)(sAMAccountName=${ldapLoginDto.username}))`,
+      scope: 'sub'
+    }
+
+    this.ldap.bind(`${ldapLoginDto.username}@starlux-airlines.com`, ldapLoginDto.password, (err) => {
+      this.ldap.search('OU=starlux-airlines,DC=starlux-airlines,DC=com', opts, (err, result) => {
+        result.on('searchEntry', async (entry) => {
+          console.log(entry.object);
+
+          let user = await this.userModel.findOne({email: entry.object.mail }).exec();
+
+          if (!user) {
+            user = await this.userModel.create({
+              email: entry.object.mail,
+              profile: {
+                name: entry.object.name
+              }
+            });
+          }
+
+          req.logout();
+          session.passport = { user: user };
+
+          return res.redirect('/auth/user');
+        });
+
+        result.on('error', error => {
+          console.error('error: ', error.message);
+          req.flash('error', 'Ldap Authentication Failed!');
+          res.redirect('back');
+        })
+
+        result.on('end', result => {
+          console.log('If not found', result);
+        })
+      })
+    })
   }
 
   @Get('logout')
