@@ -6,29 +6,66 @@
   <body>
     <div class="container mt-5">
       <%- include('../flash'); %>
+      <div class="text-center">
+        <img id="brand" src="https://camo.githubusercontent.com/0d358238ba8c67946e6555aad926b947e1a5048f/68747470733a2f2f6e6573746a732e636f6d2f696d672f6c6f676f5f746578742e737667" height="100px" href="#">
+      </div>
+      <ul class="nav nav-tabs nav-fill" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" role="tab" href="#normal-form">普通登入</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" role="tab" href="#ldap-form">AD登入</a>
+        </li>
+      </ul>
       <div class="card text-center border-dark">
         <div class="card-body w-50 mx-auto">
-          <div id="brand-animation">
-            <img id="brand" src="https://camo.githubusercontent.com/0d358238ba8c67946e6555aad926b947e1a5048f/68747470733a2f2f6e6573746a732e636f6d2f696d672f6c6f676f5f746578742e737667" height="100px" href="#" onclick="fire()">
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="normal-form" role="tabpanel">
+            <form action="/auth/login" method="post">
+              <div class="form-group row">
+                <label for="email" class="col-form-label font-weight-bold">Email address</label>
+                <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+                <small id="emailHelp" class="form-text">We'll never share your email with anyone else.</small>
+              </div>
+              <div class="form-group row">
+                <label for="password" class="col-form-label font-weight-bold">Password</label>
+                <a class="btn btn-link" href="/auth/forgot">Forget your password?</a>
+                <input type="password" name="password" class="form-control" id="password" placeholder="Password">
+              </div>
+              <div class="form-group row">
+                <button type="submit" class="btn btn-primary">
+                  <span class="fas fa-unlock-alt"></span>
+                  Login
+                </button>
+                <a class="btn btn-link" href="/auth/signup">New to here ?</a>
+              </div>
+            </form>
           </div>
-          <form action="/auth/login" method="post">
-            <div class="form-group row">
-              <label for="email" class="col-form-label font-weight-bold">Email address</label>
-              <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
-              <small id="emailHelp" class="form-text">We'll never share your email with anyone else.</small>
-            </div>
-            <div class="form-group row">
-              <label for="password" class="col-form-label font-weight-bold">Password</label>
-              <a class="btn btn-link" href="/auth/forgot">Forget your password?</a>
-              <input type="password" name="password" class="form-control" id="password" placeholder="Password">
-            </div>
-            <div class="form-group row">
-              <button type="submit" class="btn btn-primary">
-                <span class="fas fa-unlock-alt"></span>
-                Login
-              </button>
-              <a class="btn btn-link" href="/auth/signup">New to here ?</a>
-            </div>
+          <div class="tab-pane fade" id="ldap-form" role="tabpanel">
+            <form action="/auth/ldap/login" method="post">
+              <div class="form-group row">
+                <label for="username" class="col-form-label font-weight-bold">LDAP Account</label>
+                <div class="input-group">
+                  <input type="text" name="username" class="form-control" aria-describedby="emailHelp" placeholder="1900154">
+                  <div class="input-group-append">
+                      <span class="input-group-text bg-primary">@starlux-airlines.com</span>
+                  </div>
+                </div>
+                <small id="emailHelp" class="form-text">We'll never share your Ldap account with anyone else.</small>
+              </div>
+              <div class="form-group row">
+                <label for="password" class="col-form-label font-weight-bold">Password</label>
+                <input type="password" name="password" class="form-control" id="password" placeholder="Password">
+              </div>
+              <div class="form-group row">
+                <button type="submit" class="btn btn-primary">
+                  <span class="fas fa-unlock-alt"></span>
+                  Login
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
             <hr>
             <div class="form-group">
               <a class="btn btn-block btn-social btn-google" href="/auth/google">
@@ -41,7 +78,6 @@
                 <span class="fab fa-facebook"></span> Sign in with Facebook
               </a>
             </div>
-          </form>
         </div>
         <div class="card-footer">
           <small>Login is good.</small>
@@ -50,25 +86,3 @@
     </div>
   </body>
 </html>
-<script>
-  function fire() {
-    let zone = document.getElementById('brand-animation');
-    let brand = document.getElementById('brand');
-    let fire = document.createElement('img');
-    fire.setAttribute('src', 'http://www.downloadclipart.net/medium/3292-fire-icon-clip-art.png');
-    fire.setAttribute('style', 'width:28px;')
-    zone.appendChild(fire);
-    anime({
-      targets: brand,
-      translateX: 250,
-      rotate: '1turn',
-      duration: 1000
-    });
-    anime({
-      targets: fire,
-      translateX: -400,
-      scale: 2,
-      duration: 2000
-    });
-  }
-</script>
